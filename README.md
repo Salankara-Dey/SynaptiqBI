@@ -12,14 +12,13 @@ AI-powered Business Intelligence & Automation Platform.
 
 ```bash
 cp .env.example .env
-# Edit .env — set SECRET_KEY (openssl rand -hex 32), DB credentials
+# Edit .env and replace SECRET_KEY and database credentials.
 
 docker compose up --build
-
-# First boot only — run migrations
-docker compose exec backend alembic revision --autogenerate -m "initial_schema"
-docker compose exec backend alembic upgrade head
 ```
+
+The backend applies committed Alembic migrations automatically during startup.
+Do not generate a new migration during first boot.
 
 Services:
 - Frontend → http://localhost:5173
@@ -85,6 +84,14 @@ Each step is independently testable — see `backend/tests/test_etl_pipeline.py`
 ```bash
 docker compose exec backend pytest tests/ -v
 ```
+
+## Deployment Status
+
+The Compose stack is configured for local development and evaluation. It is not
+the production deployment target because Vite and Uvicorn run with development
+servers and source-mounted volumes. A production deployment should build the
+frontend into static assets, run Uvicorn without reload behind a reverse proxy,
+and use managed secrets and persistent PostgreSQL/storage services.
 
 ## Phase Roadmap
 | Phase | Feature | Status |

@@ -76,7 +76,7 @@ class NullHandlerStep(PipelineStep):
         for col in df.columns:
             null_ratio = df[col].isna().sum() / max(len(df), 1)
 
-            if null_ratio > self.NULL_THRESHOLD:
+            if null_ratio >= self.NULL_THRESHOLD:
                 dropped.append(col)
                 null_report[col] = {"action": "dropped", "null_ratio": round(null_ratio, 3)}
                 continue

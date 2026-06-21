@@ -36,7 +36,14 @@ class Dataset(Base):
     raw_columns: Mapped[list | None] = mapped_column(JSON, nullable=True)
 
     status: Mapped[DatasetStatus] = mapped_column(
-        Enum(DatasetStatus, name="dataset_status"), default=DatasetStatus.PENDING, nullable=False, index=True
+        Enum(
+            DatasetStatus,
+            name="dataset_status",
+            values_callable=lambda enum_class: [member.value for member in enum_class],
+        ),
+        default=DatasetStatus.PENDING,
+        nullable=False,
+        index=True,
     )
     clean_row_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     column_types: Mapped[dict | None] = mapped_column(JSON, nullable=True)

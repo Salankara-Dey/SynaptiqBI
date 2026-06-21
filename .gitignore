@@ -2,6 +2,7 @@
 *.env.local
 __pycache__/
 *.pyc
+.pytest_cache/
 .venv/
 dist/
 *.egg-info/
@@ -12,3 +13,4 @@ uploads/
 .vscode/
 .idea/
 *.DS_Store
+*.log

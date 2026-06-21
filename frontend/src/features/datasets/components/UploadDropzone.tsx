@@ -104,7 +104,7 @@ export function UploadDropzone({ onUploaded }: UploadDropzoneProps) {
 
           {isUploading && (
             <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "var(--surface-2)" }}>
-              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: state === "success" ? "#4dcf7f" : "var(--ink)" }} />
+              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: "var(--ink)" }} />
             </div>
           )}
 
