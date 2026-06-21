@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Geist+Mono:wght@300;400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink:        #0a0a0f;
+  --ink-soft:   #1c1c28;
+  --surface:    #f5f4f0;
+  --surface-2:  #edecea;
+  --muted:      #8a8990;
+  --accent:     #c8f04d;
+  --accent-dim: #a8d030;
+  --danger:     #f04d4d;
+  --border:     rgba(10,10,15,0.10);
+  --radius:     10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-[var(--radius)]
+           font-semibold text-sm tracking-wide transition-all duration-200;
+    background: var(--ink);
+    color: var(--accent);
+    border: 1.5px solid var(--ink);
+  }
+  .btn-primary:hover { background: var(--ink-soft); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-[var(--radius)]
+           font-semibold text-sm tracking-wide transition-all duration-200;
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--ink); }
+
+  .input-field {
+    @apply w-full px-4 py-3 text-sm rounded-[var(--radius)] outline-none transition-all duration-200;
+    background: white;
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+    font-family: 'Syne', sans-serif;
+  }
+  .input-field::placeholder { color: var(--muted); }
+  .input-field:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(200,240,77,0.25); }
+  .input-field.error { border-color: var(--danger); }
+
+  .card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: calc(var(--radius) * 1.5);
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
+}
+
+.animate-fade-up   { animation: fadeUp 0.5s ease both; }
+.animate-fade-up-1 { animation: fadeUp 0.5s 0.08s ease both; }
+.animate-fade-up-2 { animation: fadeUp 0.5s 0.16s ease both; }
+.animate-fade-up-3 { animation: fadeUp 0.5s 0.24s ease both; }
+.animate-fade-up-4 { animation: fadeUp 0.5s 0.32s ease both; }
+.animate-fade-in   { animation: fadeIn 0.4s ease both; }

@@ -1,0 +1,14 @@
+.env
+*.env.local
+__pycache__/
+*.pyc
+.venv/
+dist/
+*.egg-info/
+node_modules/
+frontend/dist/
+postgres_data/
+uploads/
+.vscode/
+.idea/
+*.DS_Store
