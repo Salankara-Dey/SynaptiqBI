@@ -1,4 +1,4 @@
-# Lumina BI — Phases 1 & 2
+# SynaptiqBI — Phases 1 & 2
 
 AI-powered Business Intelligence & Automation Platform.
 
@@ -27,7 +27,7 @@ Services:
 
 ## Project Structure
 ```
-lumina-bi/
+SynaptiqBI/
 ├── backend/
 │   ├── app/
 │   │   ├── api/v1/routes/        # Thin routers — auth, datasets

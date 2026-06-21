@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Lumina BI API",
+    title="SynaptiqBI API",
     version="1.0.0",
     description="AI-powered Business Intelligence & Automation Platform",
     docs_url="/docs" if not settings.is_production else None,

@@ -20,7 +20,7 @@ export default function RegisterPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   return (
-    <AuthLayout heading="Create your account" subheading="Start your free Lumina workspace today">
+    <AuthLayout heading="Create your account" subheading="Start your SynaptiqBI workspace today">
       <form onSubmit={handleSubmit(registerUser)} className="flex flex-col gap-4">
         {error && <div className="animate-fade-up"><Alert message={error} /></div>}
         <div className="animate-fade-up-1">

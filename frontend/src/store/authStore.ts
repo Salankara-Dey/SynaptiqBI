@@ -23,6 +23,6 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ accessToken: null, refreshToken: null, user: null }),
       isAuthenticated: () => !!get().accessToken,
     }),
-    { name: "lumina-auth", partialize: (s) => ({ accessToken: s.accessToken, refreshToken: s.refreshToken }) }
+    { name: "synaptiqbi-auth", partialize: (s) => ({ accessToken: s.accessToken, refreshToken: s.refreshToken }) }
   )
 );

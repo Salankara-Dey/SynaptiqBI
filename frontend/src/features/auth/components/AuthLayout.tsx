@@ -15,7 +15,7 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
         <div className="relative z-10 animate-fade-up">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-black" style={{ background: "var(--accent)", color: "var(--ink)" }}>L</div>
-            <span className="text-white font-bold text-lg tracking-tight">Lumina BI</span>
+            <span className="text-white font-bold text-lg tracking-tight">SynaptiqBI</span>
           </div>
         </div>
 
@@ -39,7 +39,7 @@ export function AuthLayout({ children, heading, subheading }: AuthLayoutProps) {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
         <div className="lg:hidden flex items-center gap-2 mb-10">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black" style={{ background: "var(--ink)", color: "var(--accent)" }}>L</div>
-          <span className="font-bold text-base tracking-tight" style={{ color: "var(--ink)" }}>Lumina BI</span>
+          <span className="font-bold text-base tracking-tight" style={{ color: "var(--ink)" }}>SynaptiqBI</span>
         </div>
         <div className="w-full max-w-[400px]">
           <div className="mb-8 animate-fade-up">

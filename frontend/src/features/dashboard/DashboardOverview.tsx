@@ -32,7 +32,7 @@ export default function DashboardOverview() {
       <div className="mb-10">
         <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: "var(--muted)" }}>{greeting}</p>
         <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--ink)" }}>{user?.full_name ?? "Welcome"} ↗</h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--muted)" }}>Your Lumina BI workspace · Phase 2 active</p>
+        <p className="text-sm mt-1.5" style={{ color: "var(--muted)" }}>Your SynaptiqBI workspace · Phase 2 active</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
