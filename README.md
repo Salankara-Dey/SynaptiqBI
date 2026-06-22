@@ -1,4 +1,4 @@
-# SynaptiqBI — Phases 1 & 2
+# SynaptiqBI — Phases 1, 2 & 3
 
 AI-powered Business Intelligence & Automation Platform.
 
@@ -30,21 +30,28 @@ Services:
 SynaptiqBI/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/routes/        # Thin routers — auth, datasets
+│   │   ├── api/v1/routes/        # Thin routers — auth, datasets, analytics
 │   │   ├── core/                 # config, database, security
 │   │   ├── domains/
 │   │   │   ├── identity/         # Auth service + schemas
 │   │   │   ├── data/             # Phase 2: upload, ETL pipeline, storage
 │   │   │   │   ├── pipeline/     # Pluggable ETL steps (strip, type-infer, null-handle, dedup, profile)
 │   │   │   │   └── services/     # dataset_service, storage_service
+│   │   │   ├── analytics/        # Phase 3: aggregation, charts, correlation, summary
+│   │   │   │   ├── schemas.py    # Request/response Pydantic models
+│   │   │   │   └── analytics_service.py  # Pure computation on DataFrames
 │   │   │   ├── intelligence/     # Phase 4: AI (empty scaffold)
 │   │   │   └── automation/       # Phase 5: n8n + Power BI (empty scaffold)
 │   │   └── db/models/            # User, Dataset, DatasetRow
-│   └── tests/                    # auth, datasets, ETL pipeline unit tests
+│   └── tests/                    # auth, datasets, ETL pipeline, analytics unit tests
 └── frontend/src/
     ├── features/auth/            # Login, Register, hooks, API
     ├── features/dashboard/       # Layout, sidebar, overview
     ├── features/datasets/        # Upload dropzone, dataset cards, detail modal
+    ├── features/analytics/       # Phase 3: charts, aggregation, correlation, summary
+    │   ├── components/           # AnalyticsPage, ChartRenderer, AggregationBuilder, CorrelationHeatmap
+    │   ├── hooks/                # useAnalytics
+    │   └── services/             # analyticsApi
     ├── components/ui/            # Shared FormField, Alert
     ├── services/api.ts           # Axios + interceptors
     └── store/authStore.ts        # Zustand auth state
@@ -66,6 +73,23 @@ GET    /api/v1/datasets/              → 200 { datasets, total }
 GET    /api/v1/datasets/{id}          → 200 { dataset }    status: pending|running|ready|failed
 GET    /api/v1/datasets/{id}/rows     → 200 { rows, ... }  query: limit, offset
 DELETE /api/v1/datasets/{id}          → 204
+```
+
+### Analytics (Phase 3)
+```
+POST /api/v1/analytics/{id}/aggregate    → 200 { columns, rows, total_rows }
+     body: { group_by: [...], metrics: [{column, function}], filters: [{column, operator, value}] }
+     functions: sum, mean, median, min, max, count, nunique
+
+POST /api/v1/analytics/{id}/chart        → 200 { chart_type, labels, series }
+     body: { chart_type, x_column, y_column?, group_by?, filters, bins? }
+     chart_types: bar, line, pie, scatter, histogram
+
+GET  /api/v1/analytics/{id}/correlation  → 200 { columns, matrix }
+     Pearson correlation for all numeric columns
+
+GET  /api/v1/analytics/{id}/summary      → 200 { dataset_id, row_count, column_count, ... }
+     Enhanced stats: percentiles, skewness, histograms, frequency tables
 ```
 
 ## ETL Pipeline
@@ -98,6 +122,6 @@ and use managed secrets and persistent PostgreSQL/storage services.
 |-------|---------|--------|
 | 1 | Foundation (Auth + DB + Routing) | ✅ Complete |
 | 2 | Data Layer (Upload + ETL + Storage) | ✅ Complete |
-| 3 | Analytics APIs | Upcoming |
+| 3 | Analytics APIs (Aggregation + Charts + Correlation) | ✅ Complete |
 | 4 | AI Engine (Insights + NL→SQL + Forecast) | Upcoming |
 | 5 | Automation (n8n + Power BI) | Upcoming |

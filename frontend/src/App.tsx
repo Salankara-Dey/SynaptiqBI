@@ -7,6 +7,7 @@ import LoginPage from "@/features/auth/components/LoginPage";
 import RegisterPage from "@/features/auth/components/RegisterPage";
 import DashboardOverview from "@/features/dashboard/DashboardOverview";
 import DatasetsPage from "@/features/datasets/components/DatasetsPage";
+import AnalyticsPage from "@/features/analytics/components/AnalyticsPage";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard"            element={<DashboardOverview />} />
             <Route path="/dashboard/datasets"   element={<DatasetsPage />} />
+            <Route path="/dashboard/analytics"  element={<AnalyticsPage />} />
             <Route path="/dashboard/insights"   element={
               <PlaceholderPage title="AI Insights" phase="Phase 4" icon="◎" description="LangChain-powered narrative insights from your data. Coming in Phase 4." />
             } />

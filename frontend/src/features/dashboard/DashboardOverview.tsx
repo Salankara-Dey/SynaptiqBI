@@ -1,46 +1,58 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { authService } from "@/features/auth/services/authApi";
-
-const STATS = [
-  { label: "Datasets", value: "—", sub: "See Datasets tab", icon: "⊞" },
-  { label: "AI Insights", value: "—", sub: "Available in Phase 4", icon: "◎" },
-  { label: "Queries Run", value: "—", sub: "Available in Phase 4", icon: "⌘" },
-  { label: "Workflows", value: "—", sub: "Available in Phase 5", icon: "⟳" },
-];
-
-const PHASES = [
-  { num: 1, label: "Foundation", status: "done",     desc: "Auth · DB · Routing" },
-  { num: 2, label: "Data Layer", status: "active",   desc: "Upload · ETL · Storage" },
-  { num: 3, label: "Analytics",  status: "upcoming", desc: "APIs · Aggregations" },
-  { num: 4, label: "AI Engine",  status: "upcoming", desc: "Insights · NL→SQL · Forecast" },
-  { num: 5, label: "Automation", status: "upcoming", desc: "n8n · Power BI" },
-];
+import { datasetsApi } from "@/features/datasets/services/datasetsApi";
 
 export default function DashboardOverview() {
   const { user, setUser } = useAuthStore();
+  const [datasetCount, setDatasetCount] = useState<number | null>(null);
+  const [readyCount, setReadyCount] = useState<number | null>(null);
 
   useEffect(() => {
     authService.me().then((res) => setUser(res.data.user)).catch(() => {});
+    datasetsApi.list().then((res) => {
+      setDatasetCount(res.data.total);
+      setReadyCount(res.data.datasets.filter((d) => d.status === "ready").length);
+    }).catch(() => {});
   }, [setUser]);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+  const STATS = [
+    { label: "Datasets", value: datasetCount !== null ? String(datasetCount) : "—", sub: readyCount !== null ? `${readyCount} ready for analysis` : "See Datasets tab", icon: "⊞", live: datasetCount !== null },
+    { label: "Analytics", value: readyCount !== null && readyCount > 0 ? "Live" : "—", sub: "Charts · Aggregation · Correlation", icon: "⊟", live: readyCount !== null && readyCount > 0 },
+    { label: "AI Insights", value: "—", sub: "Available in Phase 4", icon: "◎", live: false },
+    { label: "Automation", value: "—", sub: "Available in Phase 5", icon: "⟳", live: false },
+  ];
+
+  const PHASES = [
+    { num: 1, label: "Foundation", status: "done",   desc: "Auth · DB · Routing" },
+    { num: 2, label: "Data Layer", status: "done",   desc: "Upload · ETL · Storage" },
+    { num: 3, label: "Analytics",  status: "active", desc: "APIs · Charts · Aggregation" },
+    { num: 4, label: "AI Engine",  status: "upcoming", desc: "Insights · NL→SQL · Forecast" },
+    { num: 5, label: "Automation", status: "upcoming", desc: "n8n · Power BI" },
+  ];
 
   return (
     <div className="p-8 max-w-5xl mx-auto animate-fade-in">
       <div className="mb-10">
         <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: "var(--muted)" }}>{greeting}</p>
         <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--ink)" }}>{user?.full_name ?? "Welcome"} ↗</h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--muted)" }}>Your SynaptiqBI workspace · Phase 2 active</p>
+        <p className="text-sm mt-1.5" style={{ color: "var(--muted)" }}>Your SynaptiqBI workspace · Phase 3 active</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {STATS.map(({ label, value, sub, icon }, i) => (
+        {STATS.map(({ label, value, sub, icon, live }, i) => (
           <div key={label} className="card p-5 animate-fade-up" style={{ animationDelay: `${i * 0.06}s` }}>
             <div className="flex items-start justify-between mb-3">
               <span className="text-xl" style={{ color: "var(--muted)" }}>{icon}</span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--surface-2)", color: "var(--muted)" }}>Soon</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{
+                background: live ? "rgba(200,240,77,0.15)" : "var(--surface-2)",
+                color: live ? "#6a8a00" : "var(--muted)",
+              }}>
+                {live ? "Live" : "Soon"}
+              </span>
             </div>
             <p className="text-2xl font-black mb-0.5" style={{ color: "var(--ink)" }}>{value}</p>
             <p className="text-xs font-semibold" style={{ color: "var(--muted)" }}>{label}</p>
