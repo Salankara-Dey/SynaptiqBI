@@ -30,6 +30,10 @@ class UserLoginRequest(BaseModel):
     password: str
 
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
@@ -47,3 +51,45 @@ class UserResponse(BaseModel):
 
 class MeResponse(BaseModel):
     user: UserResponse
+
+
+# ── Organization schemas ─────────────────────────────────────────
+
+
+class CreateOrganizationRequest(BaseModel):
+    name: str
+
+    @field_validator("name")
+    @classmethod
+    def name_not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Organization name cannot be empty")
+        return v.strip()
+
+
+class OrganizationResponse(BaseModel):
+    id: uuid.UUID
+    name: str
+    slug: str
+    role: str
+    created_at: datetime
+
+
+class InviteMemberRequest(BaseModel):
+    email: EmailStr
+    role: str = "member"
+
+    @field_validator("role")
+    @classmethod
+    def valid_role(cls, v: str) -> str:
+        if v not in ("admin", "member", "viewer"):
+            raise ValueError("Role must be one of: admin, member, viewer")
+        return v
+
+
+class MemberResponse(BaseModel):
+    user_id: uuid.UUID
+    email: str
+    full_name: str
+    role: str
+    joined_at: datetime

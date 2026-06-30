@@ -84,13 +84,27 @@ async def get_dataset(dataset_id: uuid.UUID, owner_id: uuid.UUID, db: AsyncSessi
 
 
 async def get_dataset_rows(
-    dataset_id: uuid.UUID, owner_id: uuid.UUID, db: AsyncSession, limit: int = 100, offset: int = 0,
+    dataset_id: uuid.UUID, owner_id: uuid.UUID, db: AsyncSession,
+    limit: int = 100, offset: int = 0,
+    sort_by: str | None = None, sort_order: str = "asc",
 ) -> list[dict]:
     await get_dataset(dataset_id, owner_id, db)
-    result = await db.execute(
-        select(DatasetRow).where(DatasetRow.dataset_id == dataset_id)
-        .order_by(DatasetRow.row_index).limit(limit).offset(offset)
-    )
+
+    query = select(DatasetRow).where(DatasetRow.dataset_id == dataset_id)
+
+    if sort_by:
+        # Sort by JSON key using PostgreSQL ->> operator
+        from sqlalchemy import text as sa_text
+        json_field = DatasetRow.data[sort_by].astext
+        if sort_order.lower() == "desc":
+            query = query.order_by(json_field.desc())
+        else:
+            query = query.order_by(json_field.asc())
+    else:
+        query = query.order_by(DatasetRow.row_index)
+
+    query = query.limit(limit).offset(offset)
+    result = await db.execute(query)
     return [row.data for row in result.scalars().all()]
 
 

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.config import get_settings
@@ -43,3 +43,13 @@ async def get_current_user_id(
     if payload.get("type") != "access":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type")
     return payload["sub"]
+
+
+async def get_optional_org_id(
+    x_organization_id: str | None = Header(default=None, alias="X-Organization-Id"),
+) -> str | None:
+    """
+    Extract organization ID from the X-Organization-Id header.
+    Returns None if header not provided — endpoints can fall back to user-scoped queries.
+    """
+    return x_organization_id

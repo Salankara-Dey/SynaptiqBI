@@ -23,6 +23,9 @@ class User(Base):
     )
 
     datasets = relationship("Dataset", back_populates="owner", cascade="all, delete-orphan")
+    memberships = relationship("Membership", back_populates="user", cascade="all, delete-orphan")
+    refresh_tokens = relationship("RefreshTokenRecord", back_populates="user", cascade="all, delete-orphan")
+    saved_queries = relationship("SavedQuery", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<User id={self.id} email={self.email}>"

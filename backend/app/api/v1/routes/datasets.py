@@ -44,11 +44,13 @@ async def get_rows(
     dataset_id: uuid.UUID,
     limit: int = Query(default=100, le=1000),
     offset: int = Query(default=0, ge=0),
+    sort_by: str | None = Query(default=None, description="Column name to sort by"),
+    sort_order: str = Query(default="asc", description="Sort order: asc or desc"),
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
     ds = await get_dataset(dataset_id, uuid.UUID(user_id), db)
-    rows = await get_dataset_rows(dataset_id, uuid.UUID(user_id), db, limit, offset)
+    rows = await get_dataset_rows(dataset_id, uuid.UUID(user_id), db, limit, offset, sort_by, sort_order)
     return DatasetRowsResponse(dataset_id=dataset_id, rows=rows, limit=limit, offset=offset, total_clean_rows=ds.clean_row_count)
 
 

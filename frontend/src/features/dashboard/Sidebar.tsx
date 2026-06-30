@@ -6,9 +6,9 @@ const NAV_ITEMS = [
   { to: "/dashboard",            icon: "◈", label: "Overview",    phase: null },
   { to: "/dashboard/datasets",   icon: "⊞", label: "Datasets",    phase: null },
   { to: "/dashboard/analytics",  icon: "⊟", label: "Analytics",   phase: null },
-  { to: "/dashboard/insights",   icon: "◎", label: "AI Insights", phase: "P4" },
-  { to: "/dashboard/query",      icon: "⌘", label: "NL Query",    phase: "P4" },
-  { to: "/dashboard/forecasts",  icon: "∿", label: "Forecasting", phase: "P4" },
+  { to: "/dashboard/insights",   icon: "◎", label: "AI Insights", phase: null },
+  { to: "/dashboard/query",      icon: "⌘", label: "NL Query",    phase: null },
+  { to: "/dashboard/forecasts",  icon: "∿", label: "Forecasting", phase: null },
   { to: "/dashboard/automation", icon: "⟳", label: "Automation",  phase: "P5" },
 ];
 

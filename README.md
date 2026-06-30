@@ -1,4 +1,4 @@
-# SynaptiqBI — Phases 1, 2 & 3
+# SynaptiqBI — Phases 1, 2, 3 & 4
 
 AI-powered Business Intelligence & Automation Platform.
 
@@ -7,12 +7,14 @@ AI-powered Business Intelligence & Automation Platform.
 - **Backend** FastAPI (async) + SQLAlchemy 2.0 + Alembic + Pandas
 - **Database** PostgreSQL 16
 - **Auth** JWT (access + refresh tokens) + bcrypt
+- **AI** LangChain + OpenAI (gpt-4o-mini) + statsmodels
 
 ## Quick Start
 
 ```bash
 cp .env.example .env
 # Edit .env and replace SECRET_KEY and database credentials.
+# Optionally set OPENAI_API_KEY for AI features.
 
 docker compose up --build
 ```
@@ -30,7 +32,7 @@ Services:
 SynaptiqBI/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/routes/        # Thin routers — auth, datasets, analytics
+│   │   ├── api/v1/routes/        # Thin routers — auth, datasets, analytics, intelligence
 │   │   ├── core/                 # config, database, security
 │   │   ├── domains/
 │   │   │   ├── identity/         # Auth service + schemas
@@ -40,10 +42,13 @@ SynaptiqBI/
 │   │   │   ├── analytics/        # Phase 3: aggregation, charts, correlation, summary
 │   │   │   │   ├── schemas.py    # Request/response Pydantic models
 │   │   │   │   └── analytics_service.py  # Pure computation on DataFrames
-│   │   │   ├── intelligence/     # Phase 4: AI (empty scaffold)
+│   │   │   ├── intelligence/     # Phase 4: AI insights, NL query, forecasting
+│   │   │   │   ├── schemas.py    # Request/response Pydantic models
+│   │   │   │   ├── llm_client.py # LangChain/OpenAI wrapper
+│   │   │   │   └── intelligence_service.py  # AI logic + rule-based fallback
 │   │   │   └── automation/       # Phase 5: n8n + Power BI (empty scaffold)
 │   │   └── db/models/            # User, Dataset, DatasetRow
-│   └── tests/                    # auth, datasets, ETL pipeline, analytics unit tests
+│   └── tests/                    # auth, datasets, ETL pipeline, analytics, intelligence tests
 └── frontend/src/
     ├── features/auth/            # Login, Register, hooks, API
     ├── features/dashboard/       # Layout, sidebar, overview
@@ -52,6 +57,10 @@ SynaptiqBI/
     │   ├── components/           # AnalyticsPage, ChartRenderer, AggregationBuilder, CorrelationHeatmap
     │   ├── hooks/                # useAnalytics
     │   └── services/             # analyticsApi
+    ├── features/intelligence/    # Phase 4: AI insights, NL query, forecasting
+    │   ├── components/           # InsightsPage, NLQueryPage, ForecastPage, ForecastChart
+    │   ├── hooks/                # useIntelligence
+    │   └── services/             # intelligenceApi
     ├── components/ui/            # Shared FormField, Alert
     ├── services/api.ts           # Axios + interceptors
     └── store/authStore.ts        # Zustand auth state
@@ -92,6 +101,24 @@ GET  /api/v1/analytics/{id}/summary      → 200 { dataset_id, row_count, column
      Enhanced stats: percentiles, skewness, histograms, frequency tables
 ```
 
+### Intelligence (Phase 4)
+```
+POST /api/v1/intelligence/{id}/insights   → 200 { dataset_id, insights[], summary, token_usage }
+     body: { max_insights: 5 }
+     categories: trend, anomaly, correlation, distribution, recommendation
+     Falls back to rule-based analysis when OPENAI_API_KEY is not set.
+
+POST /api/v1/intelligence/{id}/nl-query   → 200 { dataset_id, question, generated_query, result }
+     body: { question: "What is the average revenue by region?" }
+     Translates NL → aggregate/chart config → executes immediately.
+     Requires OPENAI_API_KEY.
+
+POST /api/v1/intelligence/{id}/forecast   → 200 { dataset_id, date_column, value_column, historical[], forecast[], summary }
+     body: { date_column, value_column, periods: 30, frequency: "D"|"W"|"M" }
+     Holt-Winters exponential smoothing with 95% confidence intervals.
+     Works without OPENAI_API_KEY (AI narrative is optional).
+```
+
 ## ETL Pipeline
 
 Upload triggers a background pipeline (FastAPI `BackgroundTasks`):
@@ -123,5 +150,6 @@ and use managed secrets and persistent PostgreSQL/storage services.
 | 1 | Foundation (Auth + DB + Routing) | ✅ Complete |
 | 2 | Data Layer (Upload + ETL + Storage) | ✅ Complete |
 | 3 | Analytics APIs (Aggregation + Charts + Correlation) | ✅ Complete |
-| 4 | AI Engine (Insights + NL→SQL + Forecast) | Upcoming |
+| 4 | AI Engine (Insights + NL→Query + Forecast) | ✅ Complete |
 | 5 | Automation (n8n + Power BI) | Upcoming |
+

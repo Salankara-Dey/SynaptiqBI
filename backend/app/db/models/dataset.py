@@ -24,6 +24,9 @@ class Dataset(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     owner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    organization_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True, index=True,
+    )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     original_filename: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -54,7 +57,9 @@ class Dataset(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("NOW()"), nullable=False)
 
     owner = relationship("User", back_populates="datasets")
+    organization = relationship("Organization", back_populates="datasets")
     rows = relationship("DatasetRow", back_populates="dataset", cascade="all, delete-orphan")
+    saved_queries = relationship("SavedQuery", back_populates="dataset", cascade="all, delete-orphan")
 
 
 class DatasetRow(Base):

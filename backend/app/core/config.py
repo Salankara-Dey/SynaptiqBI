@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     UPLOAD_DIR: str = "/app/uploads"
 
+    # Phase 4: AI
+    OPENAI_API_KEY: str = ""
+
+    # Rate limiting
+    RATE_LIMIT_PER_MINUTE: int = 60
+
     @property
     def is_production(self) -> bool:
         return self.ENVIRONMENT == "production"

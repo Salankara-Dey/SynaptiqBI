@@ -22,15 +22,15 @@ export default function DashboardOverview() {
   const STATS = [
     { label: "Datasets", value: datasetCount !== null ? String(datasetCount) : "—", sub: readyCount !== null ? `${readyCount} ready for analysis` : "See Datasets tab", icon: "⊞", live: datasetCount !== null },
     { label: "Analytics", value: readyCount !== null && readyCount > 0 ? "Live" : "—", sub: "Charts · Aggregation · Correlation", icon: "⊟", live: readyCount !== null && readyCount > 0 },
-    { label: "AI Insights", value: "—", sub: "Available in Phase 4", icon: "◎", live: false },
+    { label: "AI Insights", value: readyCount !== null && readyCount > 0 ? "Live" : "—", sub: "Insights · NL Query · Forecasting", icon: "◎", live: readyCount !== null && readyCount > 0 },
     { label: "Automation", value: "—", sub: "Available in Phase 5", icon: "⟳", live: false },
   ];
 
   const PHASES = [
     { num: 1, label: "Foundation", status: "done",   desc: "Auth · DB · Routing" },
     { num: 2, label: "Data Layer", status: "done",   desc: "Upload · ETL · Storage" },
-    { num: 3, label: "Analytics",  status: "active", desc: "APIs · Charts · Aggregation" },
-    { num: 4, label: "AI Engine",  status: "upcoming", desc: "Insights · NL→SQL · Forecast" },
+    { num: 3, label: "Analytics",  status: "done",   desc: "APIs · Charts · Aggregation" },
+    { num: 4, label: "AI Engine",  status: "done",   desc: "Insights · NL→Query · Forecast" },
     { num: 5, label: "Automation", status: "upcoming", desc: "n8n · Power BI" },
   ];
 
@@ -39,7 +39,7 @@ export default function DashboardOverview() {
       <div className="mb-10">
         <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: "var(--muted)" }}>{greeting}</p>
         <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--ink)" }}>{user?.full_name ?? "Welcome"} ↗</h1>
-        <p className="text-sm mt-1.5" style={{ color: "var(--muted)" }}>Your SynaptiqBI workspace · Phase 3 active</p>
+        <p className="text-sm mt-1.5" style={{ color: "var(--muted)" }}>Your SynaptiqBI workspace · Phases 1–4 complete</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
