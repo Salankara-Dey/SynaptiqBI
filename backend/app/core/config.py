@@ -19,6 +19,16 @@ class Settings(BaseSettings):
     # Phase 4: AI
     OPENAI_API_KEY: str = ""
 
+    # Phase 5: Automation — n8n
+    N8N_WEBHOOK_BASE_URL: str = "http://n8n:5678"
+    N8N_API_KEY: str = ""
+
+    # Phase 5: Automation — Power BI
+    POWERBI_CLIENT_ID: str = ""
+    POWERBI_CLIENT_SECRET: str = ""
+    POWERBI_TENANT_ID: str = ""
+    POWERBI_WORKSPACE_ID: str = ""
+
     # Rate limiting
     RATE_LIMIT_PER_MINUTE: int = 60
 

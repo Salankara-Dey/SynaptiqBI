@@ -5,9 +5,46 @@ Order matters — each step expects the previous step's output.
 Steps are intentionally opinionated: they make pragmatic decisions
 (e.g. drop columns that are >80% null) that suit a BI context.
 """
+import re
 import pandas as pd
 import numpy as np
 from app.domains.data.pipeline.base import PipelineStep
+
+
+class NormalizeColumnsStep(PipelineStep):
+    """
+    Sanitize column names for consistent downstream use.
+    - Strip whitespace
+    - Lowercase
+    - Replace spaces and special chars with underscores
+    - Collapse multiple underscores
+    - Remove leading/trailing underscores
+    """
+
+    def run(self, df: pd.DataFrame, ctx: dict) -> tuple[pd.DataFrame, dict]:
+        df = df.copy()
+        original = df.columns.tolist()
+        normalized = []
+        for col in original:
+            name = str(col).strip().lower()
+            name = re.sub(r"[^a-z0-9_]+", "_", name)
+            name = re.sub(r"_+", "_", name).strip("_")
+            name = name or f"col_{len(normalized)}"
+            # Deduplicate
+            base = name
+            counter = 1
+            while name in normalized:
+                name = f"{base}_{counter}"
+                counter += 1
+            normalized.append(name)
+        df.columns = normalized
+        rename_map = {o: n for o, n in zip(original, normalized) if o != n}
+        ctx["steps"].append({
+            "step": self.name,
+            "columns_renamed": len(rename_map),
+            "renames": rename_map,
+        })
+        return df, ctx
 
 
 class StripWhitespaceStep(PipelineStep):

@@ -1,6 +1,6 @@
 import uuid
-from datetime import datetime
-from sqlalchemy import String, Integer, BigInteger, DateTime, ForeignKey, JSON, Enum, text
+from datetime import datetime, timezone
+from sqlalchemy import String, Integer, BigInteger, DateTime, ForeignKey, JSON, Enum, Text, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
@@ -29,6 +29,7 @@ class Dataset(Base):
     )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     original_filename: Mapped[str] = mapped_column(String(500), nullable=False)
     file_path: Mapped[str] = mapped_column(String(1000), nullable=False)
     file_size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
@@ -74,5 +75,6 @@ class DatasetRow(Base):
     dataset_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False, index=True)
     row_index: Mapped[int] = mapped_column(Integer, nullable=False)
     data: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("NOW()"), nullable=False)
 
     dataset = relationship("Dataset", back_populates="rows")
