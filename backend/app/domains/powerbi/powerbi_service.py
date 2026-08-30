@@ -67,6 +67,7 @@ async def create_report(
     )
     db.add(report)
     await db.flush()
+    await db.refresh(report)
     return report
 
 

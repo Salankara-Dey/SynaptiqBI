@@ -51,6 +51,7 @@ async def create_automation(
     )
     db.add(automation)
     await db.flush()
+    await db.refresh(automation)
     return automation
 
 
