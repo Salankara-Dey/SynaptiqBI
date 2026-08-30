@@ -56,7 +56,7 @@ function EmbedViewer({ embedUrl, embedToken, reportName, onClose }: {
 
 function CreateDialog({ onClose, onCreate }: {
   onClose: () => void;
-  onCreate: (body: CreateReportRequest) => Promise<void>;
+  onCreate: (body: CreateReportRequest) => Promise<any>;
 }) {
   const [form, setForm] = useState({ name: "", workspace_id: "", report_id: "", dataset_id: "", description: "" });
   const [saving, setSaving] = useState(false);

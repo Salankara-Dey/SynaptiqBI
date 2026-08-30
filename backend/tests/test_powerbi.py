@@ -178,10 +178,9 @@ async def test_embed_token_cache_miss_calls_azure():
 async def test_get_report_raises_404():
     """get_report raises 404 when report not found."""
     from fastapi import HTTPException
-    from sqlalchemy.ext.asyncio import AsyncSession
 
-    db = AsyncMock(spec=AsyncSession)
-    db.scalar = AsyncMock(return_value=None)
+    db = AsyncMock()
+    db.scalar.return_value = None
 
     from app.domains.powerbi.powerbi_service import get_report
     with pytest.raises(HTTPException) as exc:
