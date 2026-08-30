@@ -200,7 +200,9 @@ async def get_embed_token(
         cached = _token_cache.get(cache_key)
         if cached and cached.token_expiry > datetime.now(timezone.utc) + timedelta(minutes=2):
             logger.debug("Embed token cache hit for report %s", report.id)
-            return EmbedTokenResponse(**cached.model_dump(), cached=True)
+            data = cached.model_dump()
+            data["cached"] = True
+            return EmbedTokenResponse(**data)
 
         # Cache miss — call Azure
         logger.info("Generating new embed token for report %s", report.id)
