@@ -9,6 +9,16 @@ export function useAuth() {
   const { setTokens, setUser, logout, refreshToken } = useAuthStore();
   const navigate = useNavigate();
 
+  const extractError = (e: any, fallback: string) => {
+    const detail = e.response?.data?.detail;
+    if (!detail) return e.message || fallback;
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      return detail.map((item: any) => item.msg || JSON.stringify(item)).join(", ");
+    }
+    return JSON.stringify(detail);
+  };
+
   const login = async (data: LoginPayload) => {
     setLoading(true); setError(null);
     try {
@@ -17,7 +27,7 @@ export function useAuth() {
       const me = await authService.me();
       setUser(me.data.user);
       navigate("/dashboard");
-    } catch (e: any) { setError(e.response?.data?.detail ?? "Login failed"); }
+    } catch (e: any) { setError(extractError(e, "Login failed")); }
     finally { setLoading(false); }
   };
 
@@ -26,7 +36,7 @@ export function useAuth() {
     try {
       await authService.register(data);
       await login({ email: data.email, password: data.password });
-    } catch (e: any) { setError(e.response?.data?.detail ?? "Registration failed"); }
+    } catch (e: any) { setError(extractError(e, "Registration failed")); }
     finally { setLoading(false); }
   };
 
