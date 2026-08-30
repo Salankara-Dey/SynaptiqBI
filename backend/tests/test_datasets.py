@@ -1,4 +1,5 @@
 import io
+import os
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
@@ -7,7 +8,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from app.main import app
 from app.core.database import get_db, Base
 
-TEST_DB_URL = "postgresql+asyncpg://lumina:changeme_in_prod@localhost:5432/lumina_test"
+TEST_DB_URL = os.getenv("TEST_DATABASE_URL") or os.getenv("DATABASE_URL") or "postgresql+asyncpg://synaptiq:synaptiq123@localhost:5432/synaptiqbi_test"
 test_engine = create_async_engine(TEST_DB_URL, echo=False)
 TestSession = async_sessionmaker(bind=test_engine, expire_on_commit=False, class_=AsyncSession)
 
