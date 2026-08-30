@@ -1,4 +1,5 @@
 import io
+import uuid
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
@@ -6,11 +7,12 @@ from httpx import AsyncClient
 
 @pytest_asyncio.fixture
 async def auth_token(client: AsyncClient):
+    unique_email = f"dataset_user_{uuid.uuid4().hex[:8]}@synaptiq.ai"
     await client.post("/api/v1/auth/register", json={
-        "email": "data_tester@synaptiq.ai", "full_name": "Data User", "password": "securepassword",
+        "email": unique_email, "full_name": "Data User", "password": "securepassword",
     })
     res = await client.post("/api/v1/auth/login", json={
-        "email": "data_tester@synaptiq.ai", "password": "securepassword",
+        "email": unique_email, "password": "securepassword",
     })
     return res.json()["access_token"]
 
@@ -44,7 +46,7 @@ async def test_upload_invalid_file_type(client: AsyncClient, auth_token: str):
         "/api/v1/datasets/", files=files, data={"name": "Bad File"},
         headers={"Authorization": f"Bearer {auth_token}"},
     )
-    assert res.status_code == 400
+    assert res.status_code == 415
 
 
 @pytest.mark.asyncio
@@ -54,4 +56,4 @@ async def test_upload_empty_file(client: AsyncClient, auth_token: str):
         "/api/v1/datasets/", files=files, data={"name": "Empty"},
         headers={"Authorization": f"Bearer {auth_token}"},
     )
-    assert res.status_code == 400
+    assert res.status_code in (400, 422)

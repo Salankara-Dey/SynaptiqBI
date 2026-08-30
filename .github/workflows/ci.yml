@@ -32,6 +32,7 @@ jobs:
       SECRET_KEY: ci-test-secret-key-not-for-production
       ENVIRONMENT: test
       BACKEND_CORS_ORIGINS: '["http://localhost:5173"]'
+      UPLOAD_DIR: /tmp/uploads
 
     steps:
       - uses: actions/checkout@v4
