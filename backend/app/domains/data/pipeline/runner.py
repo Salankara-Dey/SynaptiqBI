@@ -6,11 +6,12 @@ Designed for easy step injection in tests and future extension
 import pandas as pd
 from app.domains.data.pipeline.base import PipelineStep
 from app.domains.data.pipeline.steps import (
-    StripWhitespaceStep, TypeInferenceStep, NullHandlerStep,
-    DeduplicationStep, ProfilerStep,
+    NormalizeColumnsStep, StripWhitespaceStep, TypeInferenceStep,
+    NullHandlerStep, DeduplicationStep, ProfilerStep,
 )
 
 DEFAULT_STEPS: list[PipelineStep] = [
+    NormalizeColumnsStep(),  # Sanitize column names FIRST
     StripWhitespaceStep(),
     TypeInferenceStep(),
     NullHandlerStep(),

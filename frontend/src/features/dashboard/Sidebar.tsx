@@ -20,7 +20,7 @@ export function Sidebar() {
   return (
     <aside className="flex flex-col w-[220px] min-h-screen py-6 px-4 shrink-0" style={{ background: "var(--ink)", borderRight: "1.5px solid rgba(255,255,255,0.06)" }}>
       <div className="flex items-center gap-2.5 mb-10 px-2">
-        <div className="w-7 h-7 rounded-md flex items-center justify-center font-black text-xs" style={{ background: "var(--accent)", color: "var(--ink)" }}>L</div>
+        <div className="w-7 h-7 rounded-md flex items-center justify-center font-black text-xs" style={{ background: "var(--accent)", color: "var(--ink)" }}>S</div>
         <span className="font-bold text-sm text-white tracking-tight">SynaptiqBI</span>
       </div>
 

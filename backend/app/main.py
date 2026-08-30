@@ -24,7 +24,19 @@ limiter = Limiter(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import logging
+    from sqlalchemy import text
+    from app.core.database import AsyncSessionLocal
+    logger = logging.getLogger("startup")
+    try:
+        async with AsyncSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+        logger.info("Database connection verified")
+    except Exception as exc:
+        logger.error("Database connection FAILED at startup: %s", exc)
+        raise
     yield
+    logger.info("Application shutdown")
 
 
 app = FastAPI(
