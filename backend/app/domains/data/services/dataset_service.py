@@ -158,6 +158,24 @@ async def _run_etl_async(dataset_id: str, file_path: str, mime_type: str) -> Non
             ds.profile = result["profile"]
             await db.commit()
 
+            # Phase 5: fire automation event
+            try:
+                from app.domains.automation.automation_service import fire_event
+                from app.db.models.automation import AutomationEventType
+                await fire_event(
+                    AutomationEventType.DATASET_READY,
+                    {
+                        "dataset_id": str(ds.id),
+                        "name": ds.name,
+                        "row_count": ds.clean_row_count,
+                        "column_count": len(result.get("column_types", {})),
+                    },
+                    ds.owner_id,
+                    db,
+                )
+            except Exception:
+                pass  # automation dispatch errors never break ETL
+
         except Exception as exc:
             await db.rollback()
             ds = await db.get(Dataset, uuid.UUID(dataset_id))

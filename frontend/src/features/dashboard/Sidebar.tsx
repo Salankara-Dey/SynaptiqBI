@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { to: "/dashboard/insights",   icon: "◎", label: "AI Insights", phase: null },
   { to: "/dashboard/query",      icon: "⌘", label: "NL Query",    phase: null },
   { to: "/dashboard/forecasts",  icon: "∿", label: "Forecasting", phase: null },
-  { to: "/dashboard/automation", icon: "⟳", label: "Automation",  phase: "P5" },
+  { to: "/dashboard/automation", icon: "⟳", label: "Automation",  phase: null },
 ];
 
 export function Sidebar() {

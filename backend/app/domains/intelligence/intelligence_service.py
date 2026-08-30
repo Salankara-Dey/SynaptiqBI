@@ -98,9 +98,29 @@ async def generate_insights(
         )
 
     if is_ai_available():
-        return await _llm_insights(dataset_id, profile, ds.name, max_insights)
+        result = await _llm_insights(dataset_id, profile, ds.name, max_insights)
     else:
-        return _rule_based_insights(dataset_id, profile, max_insights)
+        result = _rule_based_insights(dataset_id, profile, max_insights)
+
+    # Phase 5: fire automation event
+    try:
+        from app.domains.automation.automation_service import fire_event
+        from app.db.models.automation import AutomationEventType
+        await fire_event(
+            AutomationEventType.INSIGHT_GENERATED,
+            {
+                "dataset_id": str(dataset_id),
+                "dataset_name": ds.name,
+                "insight_count": len(result.insights),
+                "summary": result.summary,
+            },
+            owner_id,
+            db,
+        )
+    except Exception:
+        pass  # automation errors never break insight generation
+
+    return result
 
 
 async def _llm_insights(

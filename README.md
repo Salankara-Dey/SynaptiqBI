@@ -144,12 +144,11 @@ servers and source-mounted volumes. A production deployment should build the
 frontend into static assets, run Uvicorn without reload behind a reverse proxy,
 and use managed secrets and persistent PostgreSQL/storage services.
 
-## Phase Roadmap
 | Phase | Feature | Status |
 |-------|---------|--------|
 | 1 | Foundation (Auth + DB + Routing) | ✅ Complete |
 | 2 | Data Layer (Upload + ETL + Storage) | ✅ Complete |
 | 3 | Analytics APIs (Aggregation + Charts + Correlation) | ✅ Complete |
 | 4 | AI Engine (Insights + NL→Query + Forecast) | ✅ Complete |
-| 5 | Automation (n8n + Power BI) | Upcoming |
+| 5 | Automation (Webhook triggers + n8n + Run history) | ✅ Complete |
 
