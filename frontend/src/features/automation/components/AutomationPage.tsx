@@ -241,7 +241,7 @@ function AutomationCard({
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
         <div style={{
-          width: 42, height: 42, borderRadius: 10, shrink: 0,
+          width: 42, height: 42, borderRadius: 10,
           background: automation.is_active ? "rgba(200,240,77,0.1)" : "rgba(255,255,255,0.05)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 18, flexShrink: 0,
