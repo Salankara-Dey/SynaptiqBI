@@ -36,7 +36,8 @@ async def test_upload_csv(client: AsyncClient, auth_token: str):
 async def test_list_datasets(client: AsyncClient, auth_token: str):
     res = await client.get("/api/v1/datasets/", headers={"Authorization": f"Bearer {auth_token}"})
     assert res.status_code == 200
-    assert isinstance(res.json(), list)
+    assert "datasets" in res.json()
+    assert isinstance(res.json()["datasets"], list)
 
 
 @pytest.mark.asyncio
