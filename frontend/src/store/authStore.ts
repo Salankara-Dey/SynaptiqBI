@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface User { id: string; email: string; full_name: string; }
+
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
@@ -23,6 +24,14 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ accessToken: null, refreshToken: null, user: null }),
       isAuthenticated: () => !!get().accessToken,
     }),
-    { name: "synaptiqbi-auth", partialize: (s) => ({ accessToken: s.accessToken, refreshToken: s.refreshToken }) }
+    {
+      name: "synaptiqbi-auth",
+      // Phase 7 gap fix: persist user so page refresh doesn't wipe the name/email
+      partialize: (s) => ({
+        accessToken: s.accessToken,
+        refreshToken: s.refreshToken,
+        user: s.user,
+      }),
+    }
   )
 );

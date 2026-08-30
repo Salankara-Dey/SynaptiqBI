@@ -6,7 +6,7 @@ import { authService, LoginPayload, RegisterPayload } from "@/features/auth/serv
 export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setTokens, setUser, logout } = useAuthStore();
+  const { setTokens, setUser, logout, refreshToken } = useAuthStore();
   const navigate = useNavigate();
 
   const login = async (data: LoginPayload) => {
@@ -30,6 +30,18 @@ export function useAuth() {
     finally { setLoading(false); }
   };
 
-  const signOut = () => { logout(); navigate("/login"); };
+  const signOut = async () => {
+    // Phase 7 gap fix: revoke refresh token on server before clearing local state
+    if (refreshToken) {
+      try {
+        await authService.logout(refreshToken);
+      } catch {
+        // Best-effort — clear local state regardless
+      }
+    }
+    logout();
+    navigate("/login");
+  };
+
   return { login, register, signOut, loading, error };
 }

@@ -11,6 +11,7 @@ import InsightsPage from "@/features/intelligence/components/InsightsPage";
 import NLQueryPage from "@/features/intelligence/components/NLQueryPage";
 import ForecastPage from "@/features/intelligence/components/ForecastPage";
 import AutomationPage from "@/features/automation/components/AutomationPage";
+import PowerBIPage from "@/features/powerbi/components/PowerBIPage";
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="/dashboard/query"      element={<NLQueryPage />} />
             <Route path="/dashboard/forecasts"  element={<ForecastPage />} />
             <Route path="/dashboard/automation" element={<AutomationPage />} />
+            <Route path="/dashboard/powerbi"    element={<PowerBIPage />} />
           </Route>
         </Route>
 

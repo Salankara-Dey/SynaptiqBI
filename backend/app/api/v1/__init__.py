@@ -6,6 +6,7 @@ from app.api.v1.routes.intelligence import router as intelligence_router
 from app.api.v1.routes.organizations import router as organizations_router
 from app.api.v1.routes.saved_queries import router as saved_queries_router
 from app.api.v1.routes.automations import router as automations_router
+from app.api.v1.routes.powerbi import router as powerbi_router
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth_router)
@@ -15,3 +16,4 @@ api_router.include_router(intelligence_router)
 api_router.include_router(organizations_router)
 api_router.include_router(saved_queries_router)
 api_router.include_router(automations_router)
+api_router.include_router(powerbi_router)

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: "/dashboard/query",      icon: "⌘", label: "NL Query",    phase: null },
   { to: "/dashboard/forecasts",  icon: "∿", label: "Forecasting", phase: null },
   { to: "/dashboard/automation", icon: "⟳", label: "Automation",  phase: null },
+  { to: "/dashboard/powerbi",    icon: "📊", label: "Power BI",    phase: null },
 ];
 
 export function Sidebar() {

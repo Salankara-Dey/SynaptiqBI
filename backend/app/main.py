@@ -10,9 +10,11 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from app.core.config import get_settings
+from app.core.logging import configure_logging, RequestLoggingMiddleware
 from app.api.v1 import api_router
 
 settings = get_settings()
+configure_logging(level="DEBUG" if not settings.is_production else "INFO")
 
 limiter = Limiter(
     key_func=get_remote_address,
@@ -36,6 +38,9 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Phase 7: structured request logging + request ID
+app.add_middleware(RequestLoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
