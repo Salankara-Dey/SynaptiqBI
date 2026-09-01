@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useIntelligence } from "@/features/intelligence/hooks/useIntelligence";
 import type { Insight } from "@/features/intelligence/services/intelligenceApi";
 
-const CATEGORY_STYLES: Record<string, { bg: string; color: string; icon: string }> = {
-  trend:           { bg: "rgba(99,102,241,0.10)",  color: "#6366f1", icon: "↗" },
-  anomaly:         { bg: "rgba(239,68,68,0.10)",   color: "#ef4444", icon: "⚡" },
-  correlation:     { bg: "rgba(16,185,129,0.10)",  color: "#10b981", icon: "⬡" },
-  distribution:    { bg: "rgba(245,158,11,0.10)",  color: "#f59e0b", icon: "◓" },
-  recommendation:  { bg: "rgba(139,92,246,0.10)",  color: "#8b5cf6", icon: "◈" },
+const CATEGORY_STYLES: Record<string, { bg: string; color: string; border: string }> = {
+  trend: { bg: "rgba(59,130,246,0.1)", color: "#2563eb", border: "rgba(59,130,246,0.2)" },
+  anomaly: { bg: "rgba(239,68,68,0.1)", color: "#dc2626", border: "rgba(239,68,68,0.2)" },
+  correlation: { bg: "rgba(16,185,129,0.1)", color: "#059669", border: "rgba(16,185,129,0.2)" },
+  distribution: { bg: "rgba(245,158,11,0.1)", color: "#d97706", border: "rgba(245,158,11,0.2)" },
+  recommendation: { bg: "rgba(139,92,246,0.1)", color: "#7c3aed", border: "rgba(139,92,246,0.2)" },
 };
 
 function ConfidenceBar({ value }: { value: number }) {
@@ -15,10 +15,13 @@ function ConfidenceBar({ value }: { value: number }) {
   const color = pct >= 80 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444";
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--surface)" }}>
+      <span className="text-[10px] font-bold uppercase text-neutral-400">Confidence</span>
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-100 border border-black/5">
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
       </div>
-      <span className="text-xs font-mono font-semibold" style={{ color }}>{pct}%</span>
+      <span className="text-xs font-mono font-bold" style={{ color }}>
+        {pct}%
+      </span>
     </div>
   );
 }
@@ -27,37 +30,30 @@ function InsightCard({ insight, index }: { insight: Insight; index: number }) {
   const style = CATEGORY_STYLES[insight.category] || CATEGORY_STYLES.trend;
   return (
     <div
-      className="card p-5 animate-fade-up hover:shadow-md transition-shadow duration-200"
-      style={{ animationDelay: `${index * 0.06}s` }}
+      className="card-interactive p-5 animate-fade-up flex flex-col justify-between"
+      style={{ animationDelay: `${index * 0.05}s` }}
     >
-      <div className="flex items-start gap-3 mb-3">
-        <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center text-base shrink-0"
-          style={{ background: style.bg, color: style.color }}
-        >
-          {style.icon}
+      <div>
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <h3 className="text-sm font-bold text-slate-900">{insight.title}</h3>
+          <span
+            className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full shrink-0 border"
+            style={{ background: style.bg, color: style.color, borderColor: style.border }}
+          >
+            {insight.category}
+          </span>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-sm font-bold truncate" style={{ color: "var(--ink)" }}>{insight.title}</h3>
-            <span
-              className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
-              style={{ background: style.bg, color: style.color }}
-            >
-              {insight.category}
-            </span>
-          </div>
-          <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>{insight.description}</p>
-        </div>
+        <p className="text-xs text-neutral-600 leading-relaxed mb-4">{insight.description}</p>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="flex-1">
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-black/5">
+        <div className="flex-1 max-w-xs">
           <ConfidenceBar value={insight.confidence} />
         </div>
         {insight.affected_columns.length > 0 && (
           <div className="flex gap-1 shrink-0">
             {insight.affected_columns.slice(0, 3).map((col) => (
-              <span key={col} className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--surface)", color: "var(--ink)" }}>
+              <span key={col} className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-black/5">
                 {col}
               </span>
             ))}
@@ -69,57 +65,59 @@ function InsightCard({ insight, index }: { insight: Insight; index: number }) {
 }
 
 export default function InsightsPage() {
-  const {
-    datasets, selectedId, setSelectedId,
-    insights, insightsLoading, fetchInsights,
-    error,
-  } = useIntelligence();
+  const { datasets, selectedId, setSelectedId, insights, insightsLoading, fetchInsights, error } = useIntelligence();
 
   const [maxInsights, setMaxInsights] = useState(5);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto animate-fade-in">
+    <div className="p-8 max-w-7xl mx-auto animate-fade-in">
       {/* Header */}
-      <div className="mb-8">
-        <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: "var(--muted)" }}>Phase 4</p>
-        <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: "var(--ink)" }}>AI Insights</h1>
-        <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>AI-powered analysis of your dataset — patterns, anomalies, and recommendations.</p>
+      <div className="mb-8 pb-6 border-b border-black/10">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-[10px] font-extrabold tracking-widest uppercase px-2 py-0.5 rounded bg-neutral-900 text-lime-400">
+            AUTOMATED DISCOVERY
+          </span>
+        </div>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">AI Insights & Pattern Engine</h1>
+        <p className="text-xs text-neutral-500 mt-1">
+          Automated statistical pattern discovery, anomaly detection, data quality metrics, and structured AI recommendations.
+        </p>
       </div>
 
-      {/* Controls */}
+      {/* Control bar */}
       <div className="card p-5 mb-6 animate-fade-up">
         <div className="flex flex-wrap items-end gap-4">
-          {/* Dataset selector */}
-          <div className="flex-1" style={{ minWidth: 200 }}>
-            <label className="text-xs font-semibold tracking-widest uppercase block mb-1.5" style={{ color: "var(--muted)" }}>Dataset</label>
+          <div className="flex-1 min-w-[240px]">
+            <label className="text-[10px] font-extrabold uppercase tracking-wider block mb-1.5 text-neutral-500">Target Dataset</label>
             {datasets.length === 0 ? (
-              <p className="text-sm" style={{ color: "var(--muted)" }}>No ready datasets. Upload and process a dataset first.</p>
+              <p className="text-xs text-neutral-500">No ready datasets. Upload a dataset first.</p>
             ) : (
               <select
                 value={selectedId || ""}
                 onChange={(e) => setSelectedId(e.target.value)}
-                className="input-field !py-2 !text-sm"
+                className="input-field font-semibold text-slate-900"
               >
                 {datasets.map((ds) => (
                   <option key={ds.id} value={ds.id}>
-                    {ds.name} ({ds.clean_row_count?.toLocaleString()} rows)
+                    {ds.name} ({ds.clean_row_count?.toLocaleString()} clean rows)
                   </option>
                 ))}
               </select>
             )}
           </div>
 
-          {/* Max insights */}
           <div>
-            <label className="text-xs font-semibold tracking-widest uppercase block mb-1.5" style={{ color: "var(--muted)" }}>Max Insights</label>
+            <label className="text-[10px] font-extrabold uppercase tracking-wider block mb-1.5 text-neutral-500">Max Insights</label>
             <select
               value={maxInsights}
               onChange={(e) => setMaxInsights(Number(e.target.value))}
-              className="input-field !py-2 !text-sm"
-              style={{ width: 80 }}
+              className="input-field font-semibold text-slate-900"
+              style={{ width: 90 }}
             >
               {[3, 5, 7, 10].map((n) => (
-                <option key={n} value={n}>{n}</option>
+                <option key={n} value={n}>
+                  {n} items
+                </option>
               ))}
             </select>
           </div>
@@ -127,15 +125,15 @@ export default function InsightsPage() {
           <button
             onClick={() => fetchInsights(maxInsights)}
             disabled={insightsLoading || !selectedId}
-            className="btn-primary !py-2.5"
+            className="btn-primary"
           >
             {insightsLoading ? (
               <span className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--accent)", borderTopColor: "transparent" }} />
-                Analyzing…
+                <span className="w-3.5 h-3.5 rounded-full border-2 border-lime-400 border-t-transparent animate-spin" />
+                Analyzing...
               </span>
             ) : (
-              "◎ Generate Insights"
+              "Generate Insights"
             )}
           </button>
         </div>
@@ -143,81 +141,73 @@ export default function InsightsPage() {
 
       {/* Error */}
       {error && (
-        <div className="card p-4 mb-6 animate-fade-up" style={{ background: "rgba(240,77,77,0.06)", borderColor: "rgba(240,77,77,0.2)" }}>
-          <p className="text-sm font-semibold" style={{ color: "var(--danger)" }}>{error}</p>
+        <div className="p-4 rounded-xl mb-6 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700">
+          {error}
         </div>
       )}
 
       {/* Loading */}
       {insightsLoading && (
-        <div className="flex items-center justify-center py-20" style={{ color: "var(--muted)" }}>
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative w-12 h-12">
-              <div className="absolute inset-0 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "var(--ink)", borderTopColor: "transparent" }} />
-              <div className="absolute inset-2 rounded-full border-2 border-b-transparent animate-spin" style={{ borderColor: "var(--accent)", borderBottomColor: "transparent", animationDirection: "reverse", animationDuration: "0.8s" }} />
-            </div>
-            <p className="text-sm font-semibold">Analyzing your dataset with AI…</p>
-            <p className="text-xs" style={{ color: "var(--muted)" }}>This may take a few seconds</p>
-          </div>
+        <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
+          <div className="w-8 h-8 rounded-full border-2 border-slate-900 border-t-transparent animate-spin mb-3" />
+          <p className="text-xs font-bold text-slate-900">Executing statistical pattern analysis with LLM inference...</p>
         </div>
       )}
 
       {/* Results */}
       {insights && !insightsLoading && (
         <>
-          {/* Summary */}
-          <div className="card p-5 mb-6 animate-fade-up" style={{ background: "var(--ink)", borderColor: "var(--ink)" }}>
-            <div className="flex items-start gap-3">
-              <span className="text-xl">◎</span>
-              <div>
-                <p className="text-sm font-bold mb-1" style={{ color: "var(--accent)" }}>Analysis Summary</p>
-                <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>{insights.summary}</p>
+          {/* Executive summary block */}
+          <div className="card p-6 mb-6 animate-fade-up bg-neutral-900 text-white border-neutral-900 shadow-md">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-lime-400 text-neutral-900 flex items-center justify-center font-black shrink-0">
+                AI
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-extrabold uppercase tracking-widest text-lime-400 mb-1">Executive AI Summary</p>
+                <p className="text-xs leading-relaxed text-neutral-200">{insights.summary}</p>
                 {insights.token_usage > 0 && (
-                  <p className="text-xs mt-2 font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>
-                    ~{insights.token_usage} tokens used
+                  <p className="text-[10px] font-mono text-neutral-400 mt-2">
+                    Inference token count: ~{insights.token_usage} tokens
                   </p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-up-1">
+          {/* Stats overview */}
+          <div className="grid grid-cols-3 gap-4 mb-6 animate-fade-up-1">
             {[
-              { label: "Insights", value: insights.insights.length, icon: "◎" },
+              { label: "Insights Discovered", value: insights.insights.length },
               {
-                label: "Avg Confidence",
-                value: insights.insights.length > 0
-                  ? `${Math.round((insights.insights.reduce((a, i) => a + i.confidence, 0) / insights.insights.length) * 100)}%`
-                  : "—",
-                icon: "◈",
+                label: "Average Confidence",
+                value:
+                  insights.insights.length > 0
+                    ? `${Math.round((insights.insights.reduce((a, i) => a + i.confidence, 0) / insights.insights.length) * 100)}%`
+                    : "—",
               },
               {
-                label: "Categories",
+                label: "Categories Flagged",
                 value: new Set(insights.insights.map((i) => i.category)).size,
-                icon: "⊡",
               },
-            ].map(({ label, value, icon }) => (
+            ].map(({ label, value }) => (
               <div key={label} className="card p-4 text-center">
-                <span className="text-lg block mb-1" style={{ color: "var(--muted)" }}>{icon}</span>
-                <p className="text-xl font-black" style={{ color: "var(--ink)" }}>{value}</p>
-                <p className="text-xs font-semibold mt-0.5" style={{ color: "var(--muted)" }}>{label}</p>
+                <p className="text-xl font-black text-slate-900">{value}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 mt-0.5">{label}</p>
               </div>
             ))}
           </div>
 
-          {/* Insight cards */}
-          <div className="space-y-3">
+          {/* Cards grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {insights.insights.map((insight, i) => (
               <InsightCard key={i} insight={insight} index={i} />
             ))}
           </div>
 
           {insights.insights.length === 0 && (
-            <div className="card p-8 text-center animate-fade-up">
-              <span className="text-4xl block mb-3">◎</span>
-              <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>No insights generated</p>
-              <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>The dataset may not contain enough variation for meaningful insights.</p>
+            <div className="card p-12 text-center text-xs font-bold text-neutral-500">
+              No anomalies or significant patterns detected in the current sample.
             </div>
           )}
         </>
@@ -225,11 +215,15 @@ export default function InsightsPage() {
 
       {/* Empty state */}
       {!insights && !insightsLoading && (
-        <div className="flex flex-col items-center justify-center py-20 animate-fade-up" style={{ color: "var(--muted)" }}>
-          <span className="text-5xl mb-4">◎</span>
-          <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>Ready to analyze</p>
-          <p className="text-xs mt-1 text-center max-w-sm">
-            Select a dataset and click "Generate Insights" to get AI-powered analysis of patterns, anomalies, and recommendations.
+        <div className="card p-12 text-center flex flex-col items-center border-dashed border-2">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center mb-3">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <p className="text-sm font-bold text-slate-900">Ready to execute AI discovery</p>
+          <p className="text-xs text-neutral-500 mt-1 max-w-sm">
+            Select a target dataset above and click "Generate Insights" to run automated LLM pattern extraction.
           </p>
         </div>
       )}

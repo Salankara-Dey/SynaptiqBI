@@ -1,7 +1,9 @@
 import { useState, useRef, DragEvent } from "react";
 import { datasetsApi, Dataset } from "@/features/datasets/services/datasetsApi";
 
-interface UploadDropzoneProps { onUploaded: (ds: Dataset) => void; }
+interface UploadDropzoneProps {
+  onUploaded: (ds: Dataset) => void;
+}
 type UploadState = "idle" | "dragging" | "uploading" | "success" | "error";
 
 const ACCEPT = ".csv,.xlsx,.xls";
@@ -16,7 +18,7 @@ export function UploadDropzone({ onUploaded }: UploadDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const validate = (file: File): string | null => {
-    if (file.size > MAX_MB * 1024 * 1024) return `File exceeds ${MAX_MB} MB`;
+    if (file.size > MAX_MB * 1024 * 1024) return `File exceeds ${MAX_MB} MB limit`;
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (!["csv", "xlsx", "xls"].includes(ext ?? "")) return "Only CSV and XLSX files allowed";
     return null;
@@ -24,7 +26,11 @@ export function UploadDropzone({ onUploaded }: UploadDropzoneProps) {
 
   const handleFile = (file: File) => {
     const err = validate(file);
-    if (err) { setErrorMsg(err); setState("error"); return; }
+    if (err) {
+      setErrorMsg(err);
+      setState("error");
+      return;
+    }
     setSelectedFile(file);
     setName(file.name.replace(/\.[^.]+$/, ""));
     setState("idle");
@@ -49,9 +55,12 @@ export function UploadDropzone({ onUploaded }: UploadDropzoneProps) {
       setProgress(100);
       setState("success");
       setTimeout(() => {
-        setState("idle"); setSelectedFile(null); setName(""); setProgress(0);
+        setState("idle");
+        setSelectedFile(null);
+        setName("");
+        setProgress(0);
         onUploaded(res.data);
-      }, 800);
+      }, 700);
     } catch (e: any) {
       clearInterval(tick);
       setErrorMsg(e.response?.data?.detail ?? "Upload failed");
@@ -59,7 +68,12 @@ export function UploadDropzone({ onUploaded }: UploadDropzoneProps) {
     }
   };
 
-  const reset = () => { setState("idle"); setSelectedFile(null); setName(""); setErrorMsg(""); };
+  const reset = () => {
+    setState("idle");
+    setSelectedFile(null);
+    setName("");
+    setErrorMsg("");
+  };
   const isDragging = state === "dragging";
   const isUploading = state === "uploading";
 
@@ -67,49 +81,94 @@ export function UploadDropzone({ onUploaded }: UploadDropzoneProps) {
     <div className="w-full">
       {!selectedFile ? (
         <div
-          onDragOver={(e) => { e.preventDefault(); setState("dragging"); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setState("dragging");
+          }}
           onDragLeave={() => setState("idle")}
           onDrop={onDrop}
           onClick={() => inputRef.current?.click()}
-          className="relative flex flex-col items-center justify-center gap-3 p-10 rounded-xl cursor-pointer transition-all duration-200"
-          style={{ border: `2px dashed ${isDragging ? "var(--ink)" : "var(--border)"}`, background: isDragging ? "rgba(200,240,77,0.06)" : "white" }}
+          className="card relative flex flex-col items-center justify-center gap-3 p-10 cursor-pointer transition-all duration-200 border-2 border-dashed group hover:border-black/40 hover:bg-slate-50/50"
+          style={{
+            borderColor: isDragging ? "var(--ink)" : "rgba(11,13,18,0.15)",
+            background: isDragging ? "rgba(200,240,77,0.1)" : "white",
+          }}
         >
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl transition-transform"
-            style={{ background: "var(--surface-2)", transform: isDragging ? "scale(1.1)" : "scale(1)" }}>
-            {state === "error" ? "✕" : "↑"}
+          <div
+            className="w-12 h-12 rounded-xl bg-neutral-900 text-lime-400 flex items-center justify-center text-xl transition-transform group-hover:scale-110 shadow-sm"
+          >
+            {state === "error" ? (
+              "✕"
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            )}
           </div>
           <div className="text-center">
-            <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>{isDragging ? "Drop to upload" : "Drag & drop or click to browse"}</p>
-            <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>CSV or XLSX · Max {MAX_MB} MB</p>
-            {state === "error" && <p className="text-xs mt-2 font-medium" style={{ color: "var(--danger)" }}>{errorMsg}</p>}
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-900">
+              {isDragging ? "Drop spreadsheet to ingest" : "Upload Dataset File"}
+            </p>
+            <p className="text-xs text-neutral-500 mt-1">
+              Drag & drop CSV or XLSX file here, or <span className="font-bold underline text-slate-800">click to browse</span> (Max {MAX_MB} MB)
+            </p>
+            {state === "error" && (
+              <p className="text-xs font-bold text-rose-600 mt-2">{errorMsg}</p>
+            )}
           </div>
-          <input ref={inputRef} type="file" accept={ACCEPT} className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+          <input
+            ref={inputRef}
+            type="file"
+            accept={ACCEPT}
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleFile(f);
+            }}
+          />
         </div>
       ) : (
-        <div className="card p-5 flex flex-col gap-4">
+        <div className="card p-6 flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0" style={{ background: "var(--surface-2)", color: "var(--ink)" }}>
+            <div className="w-10 h-10 rounded-lg bg-neutral-900 text-lime-400 flex items-center justify-center text-xs font-black shrink-0">
               {selectedFile.name.split(".").pop()?.toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate" style={{ color: "var(--ink)" }}>{selectedFile.name}</p>
-              <p className="text-xs" style={{ color: "var(--muted)" }}>{(selectedFile.size / 1024).toFixed(1)} KB</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{selectedFile.name}</p>
+              <p className="text-[11px] text-neutral-500 font-mono">{(selectedFile.size / 1024).toFixed(1)} KB</p>
             </div>
-            {!isUploading && <button onClick={reset} className="text-xs px-2 py-1 rounded" style={{ color: "var(--muted)" }}>✕</button>}
+            {!isUploading && (
+              <button onClick={reset} className="text-xs font-bold text-neutral-400 hover:text-slate-900 p-1">
+                ✕
+              </button>
+            )}
           </div>
 
           {!isUploading && (
-            <input className="input-field text-sm" placeholder="Dataset name (optional)" value={name} onChange={(e) => setName(e.target.value)} />
+            <input
+              className="input-field"
+              placeholder="Custom dataset name (optional)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           )}
 
           {isUploading && (
-            <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: "var(--surface-2)" }}>
-              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: "var(--ink)" }} />
+            <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div className="h-full bg-neutral-900 transition-all duration-300 rounded-full" style={{ width: `${progress}%` }} />
             </div>
           )}
 
-          {!isUploading && <button onClick={upload} className="btn-primary w-full">Upload & run ETL →</button>}
-          {isUploading && <p className="text-xs text-center font-medium" style={{ color: "var(--muted)" }}>Uploading… ETL will run automatically</p>}
+          {!isUploading && (
+            <button onClick={upload} className="btn-primary w-full">
+              Upload & Run ETL Pipeline →
+            </button>
+          )}
+          {isUploading && (
+            <p className="text-xs text-center font-bold text-neutral-500 animate-pulse">
+              Ingesting file and executing 6-stage ETL cleaning...
+            </p>
+          )}
         </div>
       )}
     </div>

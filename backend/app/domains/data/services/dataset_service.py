@@ -19,7 +19,7 @@ from app.domains.data.services.storage_service import save_upload, delete_upload
 
 
 def _read_file(path: Path, mime: str) -> pd.DataFrame:
-    if "csv" in mime or "plain" in mime:
+    if "csv" in mime or "plain" in mime or path.suffix.lower() == ".csv":
         return pd.read_csv(path, low_memory=False)
     return pd.read_excel(path, engine="openpyxl")
 
@@ -32,7 +32,10 @@ async def create_dataset(
     background_tasks: BackgroundTasks,
 ) -> Dataset:
     content_type = file.content_type or ""
-    if content_type not in ALLOWED_MIME:
+    filename_lower = (file.filename or "").lower()
+    has_valid_ext = filename_lower.endswith(('.csv', '.xls', '.xlsx'))
+
+    if content_type not in ALLOWED_MIME and not has_valid_ext:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail=f"Unsupported file type '{content_type}'. Upload CSV or XLSX.",
