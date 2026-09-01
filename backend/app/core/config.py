@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ENVIRONMENT: str = "development"
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-    UPLOAD_DIR: str = "/app/uploads"
+    UPLOAD_DIR: str = "uploads"
 
     # Phase 4: AI
     OPENAI_API_KEY: str = ""
